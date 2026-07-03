@@ -22,10 +22,19 @@ export default function Header() {
   // Close menu on route change
   useEffect(() => setMenuOpen(false), [pathname]);
 
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const handleWorkClick = (e: React.MouseEvent) => {
     if (pathname === '/') {
       e.preventDefault();
-      document.getElementById('archive-grid')?.scrollIntoView({ behavior: 'smooth' });
+      setMenuOpen(false);
+      setTimeout(() => {
+        document.getElementById('archive-grid')?.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
     }
   };
 
@@ -36,33 +45,32 @@ export default function Header() {
 
   return (
     <>
-      {/* ─── Main Header ─── */}
+      {/* ─── Main Header Bar ─── */}
       <motion.header
         initial={{ y: -60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-[99995] transition-all duration-500 ${
-          scrolled
-            ? 'bg-[#FFFFFF]/95 backdrop-blur-xl border-b border-[#01564C]/20 shadow-[0_2px_24px_rgba(1,86,76,0.08)]'
+          scrolled || menuOpen
+            ? 'bg-[#FFFFFF]/98 backdrop-blur-xl border-b border-[#01564C]/20 shadow-[0_2px_24px_rgba(1,86,76,0.08)]'
             : 'bg-black/55 backdrop-blur-sm border-b border-white/10'
         }`}
       >
-        <div className="px-6 md:px-12 flex justify-between items-center h-16 md:h-20">
+        <div className="px-5 md:px-12 flex justify-between items-center h-16 md:h-20">
 
           {/* ── Brand ── */}
-          <Magnetic>
-            <Link
-              href="/"
-              className="group flex flex-col leading-none select-none"
-            >
-              <span className={`font-serif text-lg md:text-xl font-bold tracking-[0.25em] transition-colors duration-300 ${scrolled ? 'text-[#000000]' : 'text-white'} group-hover:text-[#E9533A]`}>
-                AKASH
-              </span>
-              <span className={`font-mono text-[7px] tracking-[0.35em] uppercase transition-colors duration-300 ${scrolled ? 'text-[#01564C]' : 'text-[#E9533A]'}`}>
-                Est. 2026
-              </span>
-            </Link>
-          </Magnetic>
+          <Link href="/" className="group flex flex-col leading-none select-none z-10 relative">
+            <span className={`font-serif text-lg md:text-xl font-bold tracking-[0.25em] transition-colors duration-300 ${
+              scrolled || menuOpen ? 'text-[#000000]' : 'text-white'
+            } group-hover:text-[#E9533A]`}>
+              AKASH
+            </span>
+            <span className={`font-mono text-[7px] tracking-[0.35em] uppercase transition-colors duration-300 ${
+              scrolled || menuOpen ? 'text-[#01564C]' : 'text-[#E9533A]'
+            }`}>
+              Est. 2026
+            </span>
+          </Link>
 
           {/* ── Desktop Nav ── */}
           <nav className="hidden md:flex items-center gap-1">
@@ -78,23 +86,19 @@ export default function Header() {
                   }`}
                 >
                   {label}
-                  {/* Active underline */}
                   <motion.span
                     className="absolute bottom-0 left-5 right-5 h-[1.5px] bg-[#01564C] origin-left"
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: active ? 1 : 0 }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   />
-                  {/* Hover underline */}
                   <span className="absolute bottom-0 left-5 right-5 h-[1px] bg-[#E9533A] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
                 </Link>
               </Magnetic>
             ))}
 
-            {/* Divider */}
             <span className={`w-px h-4 mx-2 ${scrolled ? 'bg-[#01564C]/25' : 'bg-white/20'}`} />
 
-            {/* Sound toggle */}
             <Magnetic>
               <button
                 onClick={toggleMute}
@@ -104,7 +108,6 @@ export default function Header() {
                 }`}
               >
                 <span>{isMuted ? 'Muted' : 'Sound'}</span>
-                {/* Live waveform bars */}
                 <span className="flex items-end gap-[2px] h-3">
                   {[2, 3, 1, 2.5].map((h, i) => (
                     <span
@@ -112,7 +115,6 @@ export default function Header() {
                       className="w-[2px] bg-current rounded-full transition-all duration-300"
                       style={{
                         height: isMuted ? '2px' : `${h * 4}px`,
-                        animationDelay: `${i * 0.15}s`,
                         animation: isMuted ? 'none' : `pulse ${0.7 + i * 0.15}s ease-in-out infinite alternate`,
                       }}
                     />
@@ -121,7 +123,6 @@ export default function Header() {
               </button>
             </Magnetic>
 
-            {/* Contact CTA pill */}
             <Magnetic>
               <a
                 href="mailto:akash@example.com"
@@ -136,23 +137,26 @@ export default function Header() {
             </Magnetic>
           </nav>
 
-          {/* ── Mobile hamburger ── */}
+          {/* ── Mobile Hamburger ── */}
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-            className={`md:hidden flex flex-col gap-[5px] p-2 cursor-pointer ${scrolled ? 'text-[#000000]' : 'text-white'}`}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            className="md:hidden relative z-10 flex flex-col justify-center items-center w-10 h-10 cursor-pointer gap-[5px]"
           >
             <motion.span
               animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 7 : 0 }}
-              className="block w-6 h-[1.5px] bg-current origin-center transition-colors duration-300"
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className={`block w-6 h-[1.5px] origin-center ${scrolled || menuOpen ? 'bg-[#000000]' : 'bg-white'}`}
             />
             <motion.span
               animate={{ opacity: menuOpen ? 0 : 1, scaleX: menuOpen ? 0 : 1 }}
-              className="block w-6 h-[1.5px] bg-current"
+              transition={{ duration: 0.2 }}
+              className={`block w-6 h-[1.5px] ${scrolled || menuOpen ? 'bg-[#000000]' : 'bg-white'}`}
             />
             <motion.span
               animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -7 : 0 }}
-              className="block w-6 h-[1.5px] bg-current origin-center transition-colors duration-300"
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className={`block w-6 h-[1.5px] origin-center ${scrolled || menuOpen ? 'bg-[#000000]' : 'bg-white'}`}
             />
           </button>
         </div>
@@ -163,63 +167,77 @@ export default function Header() {
         {menuOpen && (
           <motion.div
             key="mobile-menu"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[99994] bg-white flex flex-col justify-center px-10 gap-10 md:hidden"
+            initial={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }}
+            animate={{ opacity: 1, clipPath: 'inset(0 0 0% 0)' }}
+            exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[99994] bg-[#FFFFFF] flex flex-col md:hidden"
           >
-            {/* Close button */}
-            <button
-              onClick={() => setMenuOpen(false)}
-              className="absolute top-6 right-6 font-mono text-[9px] tracking-widest text-[#000000]/50 hover:text-[#E9533A] transition-colors uppercase cursor-pointer"
-            >
-              [ CLOSE ]
-            </button>
+            {/* Content — starts below the header bar */}
+            <div className="flex flex-col h-full pt-16 px-8 pb-10">
 
-            {/* Brand watermark */}
-            <span className="font-serif text-6xl font-bold text-[#01564C]/08 absolute top-1/2 left-8 -translate-y-1/2 pointer-events-none select-none">
-              AKASH
-            </span>
+              {/* Nav Links — large serif */}
+              <div className="flex flex-col gap-0 mt-10 flex-1">
+                {navLinks.map(({ label, href, onClick, active }, i) => (
+                  <motion.div
+                    key={label}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ delay: 0.1 + i * 0.06, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    className="border-b border-[#01564C]/15"
+                  >
+                    <Link
+                      href={href}
+                      onClick={(e) => { onClick?.(e); setMenuOpen(false); }}
+                      className={`flex items-center justify-between py-6 group transition-colors duration-300 ${
+                        active ? 'text-[#01564C]' : 'text-[#000000] hover:text-[#E9533A]'
+                      }`}
+                    >
+                      <span className="font-serif text-4xl font-bold tracking-wide">
+                        {label}
+                      </span>
+                      <span className={`font-mono text-[9px] tracking-widest ${active ? 'text-[#01564C]' : 'text-[#000000]/30 group-hover:text-[#E9533A]'}`}>
+                        {active ? '— ACTIVE' : '→'}
+                      </span>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
 
-            {navLinks.map(({ label, href, onClick, active }, i) => (
+              {/* Footer strip */}
               <motion.div
-                key={label}
-                initial={{ opacity: 0, x: -24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.08 + i * 0.07, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="flex flex-col gap-5 pt-8 border-t border-[#01564C]/15"
               >
-                <Link
-                  href={href}
-                  onClick={(e) => { onClick?.(e); setMenuOpen(false); }}
-                  className={`font-serif text-5xl font-bold tracking-wide transition-colors duration-300 ${
-                    active ? 'text-[#01564C]' : 'text-[#000000] hover:text-[#E9533A]'
-                  }`}
+                <button
+                  onClick={toggleMute}
+                  className="flex items-center justify-between font-mono text-[11px] tracking-[0.25em] uppercase text-[#000000]/60 hover:text-[#E9533A] transition-colors cursor-pointer"
                 >
-                  {label}
-                </Link>
-              </motion.div>
-            ))}
+                  <span>{isMuted ? '— Unmute Sound' : '— Mute Sound'}</span>
+                  <span className="flex items-end gap-[2px] h-3">
+                    {[2, 3, 1, 2.5].map((h, i) => (
+                      <span key={i} className="w-[2px] bg-current rounded-full"
+                        style={{ height: isMuted ? '2px' : `${h * 4}px` }} />
+                    ))}
+                  </span>
+                </button>
 
-            <motion.div
-              initial={{ opacity: 0, x: -24 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.22, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col gap-3 mt-4 border-t border-[#01564C]/15 pt-8"
-            >
-              <button
-                onClick={() => { toggleMute(); }}
-                className="font-mono text-sm tracking-[0.25em] uppercase text-[#000000]/60 hover:text-[#E9533A] transition-colors text-left cursor-pointer"
-              >
-                {isMuted ? '— Unmute Sound' : '— Mute Sound'}
-              </button>
-              <a
-                href="mailto:akash@example.com"
-                className="font-mono text-sm tracking-[0.25em] uppercase text-[#01564C] hover:text-[#E9533A] transition-colors"
-              >
-                — Get in Touch
-              </a>
-            </motion.div>
+                <a
+                  href="mailto:akash@example.com"
+                  className="flex items-center justify-between font-mono text-[11px] tracking-[0.25em] uppercase text-[#01564C] hover:text-[#E9533A] transition-colors"
+                >
+                  <span>— Get in Touch</span>
+                  <span className="font-mono text-[9px] opacity-40">↗</span>
+                </a>
+
+                <p className="font-mono text-[8px] tracking-widest text-[#000000]/25 uppercase mt-2">
+                  © 2026 Akash Photo Studio
+                </p>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
