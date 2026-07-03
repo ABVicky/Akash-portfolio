@@ -65,13 +65,11 @@ export default function Home() {
           <HeroCanvas imageSrc="/photos/editorial/project-02-monochrome-silence/02.jpg" />
         </div>
 
-        {/* Camera HUD — desktop only (mouse-driven telemetry) */}
-        <div className="hidden md:block">
-          <CameraViewfinder />
-        </div>
+        {/* Camera HUD — self-guards on mobile via JS media query */}
+        <CameraViewfinder />
 
-        {/* Hero sub-header */}
-        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-white/70 uppercase mt-14 md:mt-16">
+        {/* Spacer to push content below fixed navbar (h-16 on mobile, h-20 on md) */}
+        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-white/70 uppercase pt-4">
           <span>PORTFOLIO COLLECTION</span>
           <span>©2026</span>
         </div>

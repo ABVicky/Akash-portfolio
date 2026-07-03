@@ -24,8 +24,13 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
 
   // Accessibility Check: Reduced motion
   const [prefersReduced, setPrefersReduced] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     setPrefersReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Keyboard controls for lightbox navigation
@@ -101,45 +106,45 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
   };
 
   return (
-    <section className="py-24 bg-canvas border-t border-[#01564C]/15 relative overflow-hidden select-none">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+    <section className="py-14 md:py-24 bg-canvas border-t border-[#01564C]/15 relative overflow-hidden select-none">
+      <div className="max-w-7xl mx-auto px-5 md:px-12 mb-8 md:mb-12 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
         <div>
           <span className="font-mono text-[9px] tracking-[0.3em] text-accent font-bold uppercase block mb-2">
             THE ARCHIVE CONTACT SHEET
           </span>
-          <h2 className="font-serif text-2xl md:text-4xl font-semibold tracking-wide">
+          <h2 className="font-serif text-xl md:text-4xl font-semibold tracking-wide">
             Interactive Light Table
           </h2>
         </div>
         <span className="font-mono text-[9px] tracking-widest text-[#000000]/55 font-semibold">
-          {prefersReduced 
-            ? "[ CLICK PHOTO TO VIEW FULLSCREEN ]" 
-            : "[ DRAG AND ARRANGE PRINTS • CLICK TO OPEN THEATER LIGHTBOX ]"
+          {(isMobile || prefersReduced)
+            ? '[ TAP PHOTO TO VIEW FULLSCREEN ]'
+            : '[ DRAG AND ARRANGE PRINTS • CLICK TO OPEN LIGHTBOX ]'
           }
         </span>
       </div>
 
-      {/* Scattered Desk Area */}
-      {prefersReduced ? (
-        /* Reduced motion: clean thumbnail grid sheet */
-        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      {/* Mobile: simple tap grid — Desktop: full scatter board */}
+      {(isMobile || prefersReduced) ? (
+        /* Mobile / reduced-motion: clean thumbnail tap grid */
+        <div className="max-w-7xl mx-auto px-5 md:px-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
           {imagePaths.map((src, idx) => (
-            <div 
-              key={src} 
+            <button
+              key={src}
               onClick={() => handleCardClick(idx)}
-              className="relative aspect-[3/4] bg-canvas-light cursor-pointer border border-[#01564C] hover:border-[#E9533A] transition-colors duration-300"
+              className="relative aspect-[3/4] bg-canvas-light border border-[#01564C] hover:border-[#E9533A] transition-colors duration-300 overflow-hidden group"
             >
               <Image
                 src={src}
                 alt={`${projectTitle} print ${idx + 1}`}
                 fill
-                sizes="(max-width: 768px) 50vw, 15vw"
-                className="object-cover filter grayscale hover:grayscale-0 transition-all duration-500"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover transition-all duration-500"
               />
-              <div className="absolute bottom-2 left-2 font-mono text-[7px] text-foreground/40 bg-black/60 px-1">
+              <div className="absolute bottom-2 left-2 font-mono text-[7px] text-white bg-black/60 px-1.5 py-0.5">
                 #{idx + 1}
               </div>
-            </div>
+            </button>
           ))}
         </div>
       ) : (
@@ -227,11 +232,11 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
             </div>
 
             {/* Main Central Image Frame */}
-            <div className="relative w-full h-[75vh] flex items-center justify-center">
+            <div className="relative w-full h-[65vh] md:h-[75vh] flex items-center justify-center">
               {/* Left Arrow Button */}
               <button
                 onClick={handlePrev}
-                className="absolute left-4 z-10 p-3 rounded-full bg-[#01564C]/10 border border-[#01564C] hover:border-[#E9533A] text-foreground/80 hover:text-[#E9533A] hover:bg-[#E9533A]/10 transition-all duration-300 cursor-pointer"
+                className="absolute left-2 md:left-4 z-10 p-3 md:p-3 rounded-full bg-[#01564C]/10 border border-[#01564C] hover:border-[#E9533A] text-foreground/80 hover:text-[#E9533A] hover:bg-[#E9533A]/10 transition-all duration-300 cursor-pointer touch-manipulation"
                 aria-label="Previous image"
               >
                 <ChevronLeft size={24} />
@@ -255,7 +260,7 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
               {/* Right Arrow Button */}
               <button
                 onClick={handleNext}
-                className="absolute right-4 z-10 p-3 rounded-full bg-[#01564C]/10 border border-[#01564C] hover:border-[#E9533A] text-foreground/80 hover:text-[#E9533A] hover:bg-[#E9533A]/10 transition-all duration-300 cursor-pointer"
+                className="absolute right-2 md:right-4 z-10 p-3 rounded-full bg-[#01564C]/10 border border-[#01564C] hover:border-[#E9533A] text-foreground/80 hover:text-[#E9533A] hover:bg-[#E9533A]/10 transition-all duration-300 cursor-pointer touch-manipulation"
                 aria-label="Next image"
               >
                 <ChevronRight size={24} />
