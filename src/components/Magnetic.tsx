@@ -6,35 +6,28 @@ import { motion } from 'framer-motion';
 export default function Magnetic({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
+  const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    const handleMouseLeave = () => {
-      setPosition({ x: 0, y: 0 });
-      setIsHovered(false);
-    };
+    // Only enable on devices with a fine pointer (desktop mouse) — no-op on touch
+    const mq = window.matchMedia('(pointer: fine)');
+    setEnabled(mq.matches);
 
+    const handleMouseLeave = () => setPosition({ x: 0, y: 0 });
     const element = ref.current;
-    if (element) {
-      element.addEventListener('mouseleave', handleMouseLeave);
-    }
+    if (element) element.addEventListener('mouseleave', handleMouseLeave);
     return () => {
-      if (element) {
-        element.removeEventListener('mouseleave', handleMouseLeave);
-      }
+      if (element) element.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ref.current) return;
+    if (!enabled || !ref.current) return;
     const { clientX, clientY } = e;
     const rect = ref.current.getBoundingClientRect();
     const x = clientX - (rect.left + rect.width / 2);
     const y = clientY - (rect.top + rect.height / 2);
-    
-    // Magnetic pull ratio
     setPosition({ x: x * 0.35, y: y * 0.35 });
-    setIsHovered(true);
   };
 
   return (

@@ -26,27 +26,27 @@ export default function About() {
   } as const;
 
   return (
-    <main className="bg-canvas text-foreground min-h-screen pt-36 pb-24 px-6 md:px-12 max-w-6xl mx-auto overflow-hidden">
+    <main className="bg-canvas text-foreground min-h-screen pt-24 md:pt-36 pb-16 md:pb-24 px-5 md:px-12 max-w-6xl mx-auto overflow-x-hidden">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24"
+        className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-24"
       >
         {/* Left Column: Heading and Contact Links */}
         <div className="col-span-1 md:col-span-5 flex flex-col justify-between">
-          <motion.div variants={itemVariants} className="space-y-6">
+          <motion.div variants={itemVariants} className="space-y-4 md:space-y-6">
             <span className="font-mono text-[9px] tracking-[0.3em] text-accent uppercase block">
               BIOGRAPHY & PHILOSOPHY
             </span>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-wide">
+            <h1 className="font-serif text-[clamp(2.5rem,8vw,4rem)] md:text-6xl font-bold leading-[1.1] tracking-wide">
               The Art <br />
               of the <br />
               <span className="font-light italic text-accent">Unseen Frame</span>
             </h1>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="mt-16 md:mt-32 space-y-8">
+          <motion.div variants={itemVariants} className="mt-10 md:mt-32 space-y-8">
             <div className="space-y-2">
               <span className="font-mono text-[8px] tracking-[0.25em] text-foreground/40 uppercase block">
                 Direct Contact

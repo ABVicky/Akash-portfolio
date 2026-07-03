@@ -6,19 +6,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import portfolioData from '@/data/portfolio-manifest.json';
 import ProjectCard from '@/components/ProjectCard';
 import TransitionLink from '@/components/TransitionLink';
-import CameraViewfinder from '@/components/CameraViewfinder';
 
-// Lazy-load the R3F Canvas component to keep initial load lightweight
+// Lazy-load heavy components
 const HeroCanvas = dynamic(() => import('@/components/HeroCanvas'), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 bg-canvas flex items-center justify-center">
-      <span className="font-mono text-[10px] tracking-widest text-foreground-muted animate-pulse">
-        PREPARING 3D VIEWPORTS...
+    <div className="absolute inset-0 bg-[#111] flex items-center justify-center">
+      <span className="font-mono text-[10px] tracking-widest text-white/30 animate-pulse">
+        PREPARING VIEWPORT...
       </span>
     </div>
   )
 });
+
+// Hide Camera HUD on touch devices — mouse coords meaningless on mobile
+const CameraViewfinder = dynamic(
+  () => import('@/components/CameraViewfinder'),
+  { ssr: false }
+);
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -52,46 +57,47 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen bg-canvas overflow-visible">
+    <main className="relative min-h-screen bg-canvas overflow-x-hidden">
       {/* 1. Landing Hero Page */}
-      <section className="relative h-screen w-full flex flex-col justify-between p-6 md:p-12 overflow-hidden select-none">
-        {/* R3F WebGL Liquid Shader background */}
+      <section className="relative h-[100svh] w-full flex flex-col justify-between p-5 md:p-12 overflow-hidden select-none">
+        {/* R3F WebGL background — lazy on mobile */}
         <div className="absolute inset-0 z-0">
           <HeroCanvas imageSrc="/photos/editorial/project-02-monochrome-silence/02.jpg" />
         </div>
 
-        {/* Live Camera Viewfinder telemetry overlay */}
-        <CameraViewfinder />
+        {/* Camera HUD — desktop only (mouse-driven telemetry) */}
+        <div className="hidden md:block">
+          <CameraViewfinder />
+        </div>
 
-
-
-        {/* Hero Content Overlay */}
-        <div className="relative z-20 flex justify-between items-center text-[10px] tracking-[0.25em] font-mono text-white/70 uppercase mt-16">
+        {/* Hero sub-header */}
+        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-white/70 uppercase mt-14 md:mt-16">
           <span>PORTFOLIO COLLECTION</span>
           <span>©2026</span>
         </div>
 
-        <div className="relative z-20 flex flex-col items-start max-w-2xl mt-auto mb-16 select-none">
+        {/* Hero headline */}
+        <div className="relative z-20 flex flex-col items-start max-w-xl md:max-w-2xl mt-auto mb-6 md:mb-16 select-none">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           >
-            <p className="font-mono text-xs tracking-[0.4em] text-accent uppercase mb-4">
+            <p className="font-mono text-[9px] md:text-xs tracking-[0.35em] md:tracking-[0.4em] text-accent uppercase mb-3 md:mb-4">
               Akash Vicky &mdash; Cinematic Vision
             </p>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-[#FFFFFF] tracking-wide leading-[1.05] capitalize drop-shadow-lg">
+            <h1 className="text-[clamp(2.25rem,8vw,4rem)] sm:text-5xl md:text-6xl font-serif font-bold text-white tracking-wide leading-[1.05] capitalize drop-shadow-lg">
               Capturing the <br />
               <span className="font-light italic text-accent">Cinematic Soul</span> of spaces
-            </h2>
+            </h1>
           </motion.div>
 
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-20 mt-8 w-full border-t border-white/20 pt-8 text-[11px] font-mono text-white/65">
-            <div className="flex flex-col gap-1 text-[8px] font-mono uppercase tracking-[0.2em] leading-relaxed text-left">
+          <div className="hidden sm:flex flex-row gap-10 md:gap-20 mt-6 md:mt-8 w-full border-t border-white/20 pt-6 md:pt-8 text-[11px] font-mono text-white/65">
+            <div className="flex flex-col gap-1 text-[8px] font-mono uppercase tracking-[0.2em] leading-relaxed">
               <span className="text-white/60 block mb-1">STORYTELLING</span>
               <span className="text-white font-serif text-[10px] lowercase italic">through film grain</span>
             </div>
-            <div className="flex flex-col gap-1 text-[8px] font-mono uppercase tracking-[0.2em] leading-relaxed text-left">
+            <div className="flex flex-col gap-1 text-[8px] font-mono uppercase tracking-[0.2em] leading-relaxed">
               <span className="text-white/60 block mb-1">CRAFT</span>
               <span className="text-white font-serif text-[10px] lowercase italic">without compromise</span>
             </div>
@@ -99,19 +105,19 @@ export default function Home() {
         </div>
 
         {/* Scroll Indicator */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
+          animate={{ opacity: 0.7 }}
           transition={{ delay: 1, duration: 1 }}
           onClick={() => {
             document.getElementById('archive-grid')?.scrollIntoView({ behavior: 'smooth' });
           }}
           className="relative z-20 mx-auto flex flex-col items-center gap-2 cursor-pointer hover:text-accent group transition-colors duration-300 pb-2"
         >
-          <span className="font-mono text-[9px] tracking-[0.3em] text-[#000000]/60 group-hover:text-accent">
+          <span className="font-mono text-[8px] md:text-[9px] tracking-[0.3em] text-white/60 group-hover:text-accent">
             SCROLL TO VIEW
           </span>
-          <div className="h-8 w-[1px] bg-[#01564C]/25 group-hover:bg-accent relative overflow-hidden transition-colors duration-300">
+          <div className="h-7 md:h-8 w-[1px] bg-white/25 group-hover:bg-accent relative overflow-hidden transition-colors duration-300">
             <motion.div
               animate={{ y: ['-100%', '100%'] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
@@ -122,25 +128,26 @@ export default function Home() {
       </section>
 
       {/* 2. Archive / Grid Section */}
-      <section 
-        id="archive-grid" 
-        className="relative z-20 min-h-screen py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto overflow-visible"
+      <section
+        id="archive-grid"
+        className="relative z-20 min-h-screen py-16 md:py-36 px-5 md:px-12 max-w-7xl mx-auto overflow-x-hidden"
       >
-        {/* Center Plumb-Line Architectural Guideline */}
-        <div className="absolute left-1/2 top-48 bottom-24 dashed-rule-v pointer-events-none hidden md:block" />
+        {/* Center Plumb-Line — desktop only */}
+        <div className="absolute left-1/2 top-48 bottom-24 dashed-rule-v pointer-events-none hidden lg:block" />
 
-        {/* Dynamic Category Filter Tabs */}
-        <div className="flex flex-wrap items-center justify-between gap-6 border-b border-[#01564C]/25 pb-6 mb-16 relative z-10">
+        {/* Category Filter Tabs */}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-4 border-b border-[#01564C]/25 pb-5 mb-10 md:mb-16 relative z-10">
           <div className="flex flex-col gap-1">
-            <span className="font-mono text-[10px] tracking-widest text-accent uppercase font-bold">
+            <span className="font-mono text-[9px] md:text-[10px] tracking-widest text-accent uppercase font-bold">
               INDEX OF WORKS
             </span>
-            <h2 className="font-serif text-2xl md:text-3xl font-medium tracking-wide">
+            <h2 className="font-serif text-xl md:text-3xl font-medium tracking-wide">
               Selected Archive
             </h2>
           </div>
 
-          <div className="flex flex-wrap gap-2 md:gap-4 text-[10px] tracking-[0.2em] font-mono uppercase">
+          {/* Horizontally scrollable filter row on mobile */}
+          <div className="flex gap-1 md:gap-4 text-[10px] tracking-[0.2em] font-mono uppercase overflow-x-auto pb-1 -mx-5 px-5 md:mx-0 md:px-0 scrollbar-none">
             {categories.map((cat) => {
               const active = selectedCategory === cat;
               const count = getCategoryCount(cat);
@@ -148,7 +155,7 @@ export default function Home() {
                 <button
                   key={cat}
                   onClick={() => handleCategorySelect(cat)}
-                  className={`relative px-4 py-2 hover:text-[#E9533A] transition-colors duration-300 cursor-pointer select-none flex items-center gap-1.5 ${
+                  className={`relative shrink-0 px-3 md:px-4 py-2.5 hover:text-[#E9533A] transition-colors duration-300 cursor-pointer select-none flex items-center gap-1.5 ${
                     active ? 'text-[#01564C] font-bold' : 'text-[#000000]/60 font-semibold'
                   }`}
                 >
@@ -167,14 +174,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Irregular Grid Container */}
-        <div className="grid grid-cols-12 gap-y-16 md:gap-x-12 md:gap-y-36 w-full items-start overflow-visible">
+        {/* Responsive Project Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 md:gap-y-16 lg:gap-y-36 w-full items-start">
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project, idx) => (
-              <ProjectCard 
-                key={project.id} 
-                project={project} 
-                index={idx} 
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={idx}
               />
             ))}
           </AnimatePresence>

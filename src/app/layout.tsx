@@ -34,6 +34,18 @@ export const metadata: Metadata = {
   title: "AKASH // Cinematic Photography Portfolio",
   description: "A professional editorial photography and cinematic production portfolio, capturing light, narrative, and quiet spaces.",
   keywords: ["photography", "cinematic", "editorial", "film", "leica", "production", "portfolio"],
+  openGraph: {
+    title: "AKASH // Cinematic Photography Portfolio",
+    description: "Editorial and cinematic photography — capturing light, narrative, and quiet spaces.",
+    type: "website",
+  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#FFFFFF",
 };
 
 export default function RootLayout({

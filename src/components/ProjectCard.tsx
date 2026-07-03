@@ -71,24 +71,28 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
   const getGridClasses = (idx: number) => {
     const Layouts = [
       {
-        aspect: 'aspect-[3/4]', // Portrait
-        width: 'col-span-12 md:col-span-5 md:ml-[8.33%]', // Offset left
-      },
-      {
-        aspect: 'aspect-[2.39/1]', // Wide Cinematic
-        width: 'col-span-12 md:col-span-6 md:mt-16', // Offset down
-      },
-      {
-        aspect: 'aspect-[16/10]', // Landscape
-        width: 'col-span-12 md:col-span-6',
+        aspect: 'aspect-[4/3]', // Landscape
+        width: 'col-span-1 sm:col-span-1 md:col-span-7',
       },
       {
         aspect: 'aspect-[3/4]', // Portrait
-        width: 'col-span-12 md:col-span-4 md:ml-[16.66%] md:-mt-12', // Floating look
+        width: 'col-span-1 sm:col-span-1 md:col-span-5 md:ml-[8.33%]',
       },
       {
-        aspect: 'aspect-[16/9]', // Standard Cinematic
-        width: 'col-span-12 md:col-span-7 md:ml-[8.33%]',
+        aspect: 'aspect-[16/9]', // Wide
+        width: 'col-span-1 sm:col-span-2 md:col-span-6 md:mt-16',
+      },
+      {
+        aspect: 'aspect-[4/3]', // Landscape
+        width: 'col-span-1 sm:col-span-1 md:col-span-6',
+      },
+      {
+        aspect: 'aspect-[3/4]', // Portrait
+        width: 'col-span-1 sm:col-span-1 md:col-span-4 md:ml-[16.66%] md:-mt-12',
+      },
+      {
+        aspect: 'aspect-[16/9]', // Wide
+        width: 'col-span-1 sm:col-span-2 md:col-span-7 md:ml-[8.33%]',
       }
     ];
 

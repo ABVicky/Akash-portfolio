@@ -175,3 +175,12 @@ html.lenis, html.lenis body {
 .horizontal-scroll-section {
   background-color: #FFFFFF !important;
 }
+
+/* Hide scrollbars on mobile filter row */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

@@ -37,15 +37,18 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
   const horizontalTrackRef = useRef<HTMLDivElement>(null);
 
   const [prefersReduced, setPrefersReduced] = React.useState(false);
-  
+  const [isMobile, setIsMobile] = React.useState(false);
+
   React.useEffect(() => {
     setPrefersReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    setIsMobile(window.innerWidth < 768);
   }, []);
 
   useGSAP(() => {
-    // Accessibility check: disable GSAP ScrollTrigger pinning & heavy movements if prefers-reduced-motion
+    // Accessibility + mobile: disable heavy GSAP animations on small screens or reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    const isMobileDevice = window.innerWidth < 768;
+    if (prefersReducedMotion || isMobileDevice) return;
 
     // --- MOMENT 1: Pinned vertical split reveal ---
     if (wipeContainerRef.current && wipeImageRef.current) {
@@ -148,9 +151,9 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
   }, { scope: containerRef });
 
   return (
-    <div ref={containerRef} className="bg-canvas text-foreground min-h-screen pb-32">
+    <div ref={containerRef} className="bg-canvas text-foreground min-h-screen pb-16 md:pb-32 overflow-x-hidden">
       {/* 1. Full-bleed Hero Cover Image */}
-      <section className="hero-section relative h-screen w-full flex flex-col justify-between p-6 md:p-12 overflow-hidden select-none">
+      <section className="hero-section relative h-[100svh] w-full flex flex-col justify-between p-5 md:p-12 overflow-hidden select-none">
         <div className="absolute inset-0 z-0">
           <Image
             src={project.coverPath}
@@ -166,7 +169,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
         {/* Ambient Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-canvas/60 via-transparent to-canvas z-10 pointer-events-none" />
 
-        <div className="relative z-20 flex justify-between items-center text-[10px] tracking-[0.25em] font-mono text-foreground/50 uppercase mt-16">
+        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-foreground/50 uppercase mt-14 md:mt-16">
           <TransitionLink href="/" className="hover:text-accent transition-colors duration-300">
             [ BACK TO ARCHIVE ]
           </TransitionLink>
@@ -179,7 +182,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
             <p className="font-mono text-xs tracking-[0.3em] text-accent uppercase mb-2">
               {project.location}
             </p>
-            <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif font-bold tracking-wide">
+            <h1 className="text-[clamp(2.5rem,10vw,6rem)] sm:text-7xl md:text-8xl font-serif font-bold tracking-wide leading-[1.0]">
               {project.title}
             </h1>
           </div>
@@ -198,7 +201,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
       </section>
 
       {/* Sparse Project Introduction Statement */}
-      <section className="py-24 px-6 md:px-12 max-w-4xl mx-auto text-center">
+      <section className="py-14 md:py-24 px-5 md:px-12 max-w-4xl mx-auto text-center">
         <span className="font-mono text-[9px] tracking-[0.3em] text-accent uppercase block mb-6">
           ARTISTIC STATEMENT
         </span>
@@ -243,7 +246,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
 
       {/* MOMENT 2: Staggered Double Parallax Images */}
       {project.imagePaths.length >= 3 && (
-        <section className="py-32 md:py-48 px-6 md:px-12 max-w-7xl mx-auto overflow-visible">
+        <section className="py-16 md:py-48 px-5 md:px-12 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center justify-center overflow-visible">
             {/* Left Parallax Column */}
             <div 
@@ -291,9 +294,9 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
       )}
 
       {/* MOMENT 3: Pinned Horizontal Filmstrip Scroll Showcase */}
-      <section 
-        ref={prefersReduced ? null : horizontalSectionRef} 
-        className="horizontal-scroll-section relative bg-white overflow-hidden min-h-screen flex flex-col justify-center py-24 border-t border-b border-[#01564C]/25"
+      <section
+        ref={(prefersReduced || isMobile) ? null : horizontalSectionRef}
+        className="horizontal-scroll-section relative bg-white overflow-hidden min-h-[60vh] md:min-h-screen flex flex-col justify-center py-14 md:py-24 border-t border-b border-[#01564C]/25"
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 w-full mb-12 flex flex-col sm:flex-row justify-between sm:items-end relative z-10 select-none gap-4">
           <div>
@@ -309,13 +312,13 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
           </span>
         </div>
 
-        {/* Sliding horizontal track */}
-        <div 
-          ref={prefersReduced ? null : horizontalTrackRef} 
+        {/* Sliding horizontal track — native scroll on mobile */}
+        <div
+          ref={(prefersReduced || isMobile) ? null : horizontalTrackRef}
           className={
-            prefersReduced 
-              ? "flex gap-6 overflow-x-auto px-6 py-4 w-full scrollbar-thin select-none" 
-              : "flex gap-8 items-center justify-start px-6 md:px-12 w-max select-none"
+            (prefersReduced || isMobile)
+              ? 'flex gap-4 overflow-x-auto px-5 py-4 w-full scrollbar-none select-none'
+              : 'flex gap-8 items-center justify-start px-6 md:px-12 w-max select-none'
           }
         >
           {/* Cover card slide */}
@@ -357,7 +360,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
       <LightTable imagePaths={project.imagePaths} projectTitle={project.title} />
 
       {/* 3. Prev / Next Navigation Footer */}
-      <section className="border-t border-[#01564C]/25 mt-32 pt-16 px-6 md:px-12 max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-stretch gap-6">
+      <section className="border-t border-[#01564C]/25 mt-16 md:mt-32 pt-10 md:pt-16 px-5 md:px-12 max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-stretch gap-4 md:gap-6">
         {/* Prev Project link */}
         <TransitionLink 
           href={`/project/${prevProject.slug}`}
