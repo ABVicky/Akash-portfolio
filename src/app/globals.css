@@ -1,26 +1,177 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: var(--font-serif), serif;
+  --font-sans: var(--font-sans), sans-serif;
+  --font-mono: var(--font-mono), monospace;
+
+  --color-canvas: #FFFFFF;
+  --color-canvas-light: #01564C;
+  --color-primary: #01564C;
+  --color-secondary: #BB2C2C;
+  --color-accent: #E9533A;
+  --color-foreground-muted: #555555;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --primary: #01564C;
+  --secondary: #BB2C2C;
+  --accent: #E9533A;
+  --text: #000000;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--primary);
+  color: #FFFFFF;
+}
+
+/* Drifting Analog Film Grain Overlay (Multiply on White background) */
+.noise-overlay {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.018;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 9999;
+  animation: noiseAnimation 0.5s steps(8) infinite;
+}
+
+@keyframes noiseAnimation {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-1%, -1%); }
+  20% { transform: translate(-2%, 2%); }
+  30% { transform: translate(1%, -2%); }
+  40% { transform: translate(-1%, 3%); }
+  50% { transform: translate(-2%, 1%); }
+  60% { transform: translate(1%, 2%); }
+  70% { transform: translate(2%, -1%); }
+  80% { transform: translate(-1%, 1%); }
+  90% { transform: translate(2%, 2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Custom Scrollbar for Light Theme */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Hide default cursor on desktop when custom cursor is active */
+@media (pointer: fine) {
+  body.custom-cursor-active {
+    cursor: none;
+  }
+  body.custom-cursor-active a, 
+  body.custom-cursor-active button,
+  body.custom-cursor-active [role="button"] {
+    cursor: none;
+  }
+}
+
+/* Lenis Integration */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Cinematic Light Leak Overlay (Uses strictly only palette colors - multiply on white) */
+.light-leak-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.11;
+  z-index: 1;
+  background: radial-gradient(circle at 20% 30%, rgba(233, 83, 58, 0.35) 0%, transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(1, 86, 76, 0.25) 0%, transparent 60%),
+              radial-gradient(circle at 40% 80%, rgba(187, 44, 44, 0.35) 0%, transparent 50%);
+  filter: blur(80px);
+  animation: lightLeakMove 24s ease-in-out infinite alternate;
+}
+
+@keyframes lightLeakMove {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(6%, -4%) scale(1.12) rotate(30deg);
+  }
+  100% {
+    transform: translate(-4%, 6%) scale(0.92) rotate(-20deg);
+  }
+}
+
+/* Overflow-hidden text reveals & cinematic text glow */
+.text-reveal-mask {
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+.text-glow {
+  text-shadow: 0 0 40px rgba(0, 0, 0, 0.07);
+}
+
+/* Reusable dashed divider rule – uses primary palette green */
+.dashed-rule {
+  border: none;
+  border-top: 1.5px dashed rgba(1, 86, 76, 0.45);
+  width: 100%;
+}
+
+/* Dashed vertical line helper */
+.dashed-rule-v {
+  width: 1.5px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(1, 86, 76, 0.45) 0px,
+    rgba(1, 86, 76, 0.45) 4px,
+    transparent 4px,
+    transparent 10px
+  );
+}
+
+/* Map horizontal timeline background to pure white */
+.horizontal-scroll-section {
+  background-color: #FFFFFF !important;
 }

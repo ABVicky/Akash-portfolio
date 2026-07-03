@@ -1,65 +1,195 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import { motion, AnimatePresence } from 'framer-motion';
+import portfolioData from '@/data/portfolio-manifest.json';
+import ProjectCard from '@/components/ProjectCard';
+import TransitionLink from '@/components/TransitionLink';
+import CameraViewfinder from '@/components/CameraViewfinder';
+
+// Lazy-load the R3F Canvas component to keep initial load lightweight
+const HeroCanvas = dynamic(() => import('@/components/HeroCanvas'), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 bg-canvas flex items-center justify-center">
+      <span className="font-mono text-[10px] tracking-widest text-foreground-muted animate-pulse">
+        PREPARING 3D VIEWPORTS...
+      </span>
+    </div>
+  )
+});
 
 export default function Home() {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // Dynamically extract categories from the manifest files folder structure
+  const categories = useMemo(() => {
+    const unique = new Set(portfolioData.map((p) => p.category));
+    return ['all', ...Array.from(unique)];
+  }, []);
+
+  // Filtered portfolio list
+  const filteredProjects = useMemo(() => {
+    if (selectedCategory === 'all') return portfolioData;
+    return portfolioData.filter((p) => p.category === selectedCategory);
+  }, [selectedCategory]);
+
+  const handleCategorySelect = (cat: string) => {
+    setSelectedCategory(cat);
+  };
+
+  // Helper to format category labels dynamically using their metadata label
+  const getCategoryLabel = (cat: string) => {
+    if (cat === 'all') return 'All';
+    const project = portfolioData.find((p) => p.category === cat);
+    return project?.categoryLabel || cat.charAt(0).toUpperCase() + cat.slice(1);
+  };
+
+  const getCategoryCount = (cat: string) => {
+    if (cat === 'all') return portfolioData.length;
+    return portfolioData.filter((p) => p.category === cat).length;
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="relative min-h-screen bg-canvas overflow-visible">
+      {/* 1. Landing Hero Page */}
+      <section className="relative h-screen w-full flex flex-col justify-between p-6 md:p-12 overflow-hidden select-none">
+        {/* R3F WebGL Liquid Shader background */}
+        <div className="absolute inset-0 z-0">
+          <HeroCanvas imageSrc="/photos/editorial/project-02-monochrome-silence/02.jpg" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Live Camera Viewfinder telemetry overlay */}
+        <CameraViewfinder />
+
+
+
+        {/* Hero Content Overlay */}
+        <div className="relative z-20 flex justify-between items-center text-[10px] tracking-[0.25em] font-mono text-white/70 uppercase mt-16">
+          <span>PORTFOLIO COLLECTION</span>
+          <span>©2026</span>
+        </div>
+
+        <div className="relative z-20 flex flex-col items-start max-w-2xl mt-auto mb-16 select-none">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <p className="font-mono text-xs tracking-[0.4em] text-accent uppercase mb-4">
+              Akash Vicky &mdash; Cinematic Vision
+            </p>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-[#FFFFFF] tracking-wide leading-[1.05] capitalize drop-shadow-lg">
+              Capturing the <br />
+              <span className="font-light italic text-accent">Cinematic Soul</span> of spaces
+            </h2>
+          </motion.div>
+
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-20 mt-8 w-full border-t border-white/20 pt-8 text-[11px] font-mono text-white/65">
+            <div className="flex flex-col gap-1 text-[8px] font-mono uppercase tracking-[0.2em] leading-relaxed text-left">
+              <span className="text-white/60 block mb-1">STORYTELLING</span>
+              <span className="text-white font-serif text-[10px] lowercase italic">through film grain</span>
+            </div>
+            <div className="flex flex-col gap-1 text-[8px] font-mono uppercase tracking-[0.2em] leading-relaxed text-left">
+              <span className="text-white/60 block mb-1">CRAFT</span>
+              <span className="text-white font-serif text-[10px] lowercase italic">without compromise</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          transition={{ delay: 1, duration: 1 }}
+          onClick={() => {
+            document.getElementById('archive-grid')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="relative z-20 mx-auto flex flex-col items-center gap-2 cursor-pointer hover:text-accent group transition-colors duration-300 pb-2"
+        >
+          <span className="font-mono text-[9px] tracking-[0.3em] text-[#000000]/60 group-hover:text-accent">
+            SCROLL TO VIEW
+          </span>
+          <div className="h-8 w-[1px] bg-[#01564C]/25 group-hover:bg-accent relative overflow-hidden transition-colors duration-300">
+            <motion.div
+              animate={{ y: ['-100%', '100%'] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+              className="absolute top-0 left-0 right-0 h-1/2 bg-accent"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* 2. Archive / Grid Section */}
+      <section 
+        id="archive-grid" 
+        className="relative z-20 min-h-screen py-24 md:py-36 px-6 md:px-12 max-w-7xl mx-auto overflow-visible"
+      >
+        {/* Center Plumb-Line Architectural Guideline */}
+        <div className="absolute left-1/2 top-48 bottom-24 dashed-rule-v pointer-events-none hidden md:block" />
+
+        {/* Dynamic Category Filter Tabs */}
+        <div className="flex flex-wrap items-center justify-between gap-6 border-b border-[#01564C]/25 pb-6 mb-16 relative z-10">
+          <div className="flex flex-col gap-1">
+            <span className="font-mono text-[10px] tracking-widest text-accent uppercase font-bold">
+              INDEX OF WORKS
+            </span>
+            <h2 className="font-serif text-2xl md:text-3xl font-medium tracking-wide">
+              Selected Archive
+            </h2>
+          </div>
+
+          <div className="flex flex-wrap gap-2 md:gap-4 text-[10px] tracking-[0.2em] font-mono uppercase">
+            {categories.map((cat) => {
+              const active = selectedCategory === cat;
+              const count = getCategoryCount(cat);
+              return (
+                <button
+                  key={cat}
+                  onClick={() => handleCategorySelect(cat)}
+                  className={`relative px-4 py-2 hover:text-[#E9533A] transition-colors duration-300 cursor-pointer select-none flex items-center gap-1.5 ${
+                    active ? 'text-[#01564C] font-bold' : 'text-[#000000]/60 font-semibold'
+                  }`}
+                >
+                  <span className="relative z-10">{getCategoryLabel(cat)}</span>
+                  <span className="text-[7px] font-mono text-[#BB2C2C] font-semibold">[{count < 10 ? `0${count}` : count}]</span>
+                  {active && (
+                    <motion.div
+                      layoutId="active-filter-bg"
+                      className="absolute inset-0 bg-[#01564C]/10 border-b-2 border-[#01564C]"
+                      transition={{ type: 'spring', stiffness: 250, damping: 25 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </main>
-    </div>
+
+        {/* Irregular Grid Container */}
+        <div className="grid grid-cols-12 gap-y-16 md:gap-x-12 md:gap-y-36 w-full items-start overflow-visible">
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, idx) => (
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                index={idx} 
+              />
+            ))}
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {/* Minimal Footer */}
+      <footer className="relative z-20 border-t border-[#01564C]/20 py-12 px-6 md:px-12 text-[10px] font-mono text-foreground/50 flex flex-col md:flex-row justify-between gap-4 max-w-7xl mx-auto">
+        <span>©2026 AKASH PHOTO STUDIO</span>
+        <div className="flex gap-6">
+          <TransitionLink href="/about" className="hover:text-[#E9533A] transition-colors duration-300">ABOUT</TransitionLink>
+          <a href="mailto:hello@akash.photography" className="hover:text-[#E9533A] transition-colors duration-300">EMAIL</a>
+          <a href="#" className="hover:text-[#E9533A] transition-colors duration-300">INSTAGRAM</a>
+        </div>
+      </footer>
+    </main>
   );
 }
