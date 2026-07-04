@@ -40,6 +40,9 @@ export default function Home() {
     return portfolioData.filter((p) => p.category === selectedCategory);
   }, [selectedCategory]);
 
+  // Determine landing hero image
+  const heroImage = '/photos/personal/project-05-street-fragments/cover.png';
+
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(cat);
   };
@@ -62,7 +65,9 @@ export default function Home() {
       <section className="relative h-[100svh] w-full flex flex-col justify-between p-5 md:p-12 overflow-hidden select-none">
         {/* R3F WebGL background — lazy on mobile */}
         <div className="absolute inset-0 z-0">
-          <HeroCanvas imageSrc="/photos/editorial/project-02-monochrome-silence/02.jpg" />
+          {heroImage && (
+            <HeroCanvas imageSrc={heroImage} />
+          )}
         </div>
 
         {/* Camera HUD — self-guards on mobile via JS media query */}

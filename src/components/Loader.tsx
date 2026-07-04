@@ -6,11 +6,11 @@ import Image from 'next/image';
 import { useAudio } from '@/context/AudioContext';
 
 const FLASH_IMAGES = [
-  '/photos/editorial/project-01-tokyo-noir/cover.jpg',
-  '/photos/editorial/project-02-monochrome-silence/cover.jpg',
-  '/photos/film/project-03-neon-dream/cover.jpg',
-  '/photos/film/project-04-desert-mirage/cover.jpg',
-  '/photos/personal/project-05-street-fragments/cover.jpg',
+  '/photos/Drink/WhatsApp Image 2026-07-04 at 2.03.36 PM (1).jpeg',
+  '/photos/Food/WhatsApp Image 2026-07-04 at 2.02.12 PM.jpeg',
+  '/photos/Jewellery/WhatsApp Image 2026-07-04 at 3.07.31 PM (1).jpeg',
+  '/photos/personal/project-05-street-fragments/01.jpg',
+  '/photos/Drink/WhatsApp Image 2026-07-04 at 2.03.36 PM.jpeg',
 ];
 
 const SHUTTER_SPEEDS = [
