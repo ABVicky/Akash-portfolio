@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import portfolioData from '@/data/portfolio-manifest.json';
 import ProjectCard from '@/components/ProjectCard';
 import TransitionLink from '@/components/TransitionLink';
+import Magnetic from '@/components/Magnetic';
 
 // Lazy-load heavy components
 const HeroCanvas = dynamic(() => import('@/components/HeroCanvas'), {
@@ -193,8 +194,24 @@ export default function Home() {
 
       {/* Minimal Footer */}
       <footer className="relative z-20 border-t border-[#01564C]/20 py-12 px-6 md:px-12 text-[10px] font-mono text-foreground/50 flex flex-col md:flex-row justify-between gap-4 max-w-7xl mx-auto">
-        <span>©2026 AKASH PHOTO STUDIO</span>
-        <div className="flex gap-6">
+        <div className="flex flex-col gap-2">
+          <span>©2026 AKASH PHOTO STUDIO</span>
+          <span className="text-[9px] tracking-wider text-foreground/50 flex flex-wrap items-center gap-1.5">
+            Designed and Crafted by{' '}
+            <Magnetic>
+              <a 
+                href="https://abvicky.in" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group-shimmer relative overflow-hidden text-white bg-[#E9533A] px-2 py-0.5 border border-[#E9533A] font-bold hover:bg-transparent hover:text-[#E9533A] hover:scale-105 active:scale-95 transition-all duration-300 text-[8px] tracking-widest uppercase rounded-sm inline-block shadow-sm"
+              >
+                Vicky Prasad Mahato
+                <span className="badge-shimmer" />
+              </a>
+            </Magnetic>
+          </span>
+        </div>
+        <div className="flex gap-6 items-start">
           <TransitionLink href="/about" className="hover:text-[#E9533A] transition-colors duration-300">ABOUT</TransitionLink>
           <a href="mailto:hello@akash.photography" className="hover:text-[#E9533A] transition-colors duration-300">EMAIL</a>
           <a href="#" className="hover:text-[#E9533A] transition-colors duration-300">INSTAGRAM</a>

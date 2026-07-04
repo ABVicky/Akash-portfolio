@@ -184,3 +184,27 @@ html.lenis, html.lenis body {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Custom shimmer/glint highlight effect */
+.badge-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+}
+.group-shimmer:hover .badge-shimmer {
+  animation: shimmer-anim 1.4s ease-in-out infinite;
+}
+@keyframes shimmer-anim {
+  100% {
+    transform: translateX(100%);
+  }
+}
