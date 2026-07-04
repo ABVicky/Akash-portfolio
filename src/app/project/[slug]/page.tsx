@@ -42,6 +42,9 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
   React.useEffect(() => {
     setPrefersReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     setIsMobile(window.innerWidth < 768);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useGSAP(() => {
@@ -169,7 +172,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
         {/* Ambient Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-canvas/60 via-transparent to-canvas z-10 pointer-events-none" />
 
-        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-foreground/50 uppercase mt-14 md:mt-16">
+        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-foreground/50 uppercase mt-20 md:mt-24">
           <TransitionLink href="/" className="hover:text-accent transition-colors duration-300">
             [ BACK TO ARCHIVE ]
           </TransitionLink>
@@ -212,36 +215,69 @@ export default function ProjectDetail({ params }: { params: Promise<{ slug: stri
 
       {/* MOMENT 1: Pinned Wipe Split Screen Sequence */}
       {project.imagePaths.length >= 2 && (
-        <section 
-          ref={wipeContainerRef} 
-          className="wipe-container relative h-screen w-full overflow-hidden bg-black flex items-center justify-center"
-        >
-          {/* Base Background Image */}
-          <div className="absolute inset-0 w-full h-full">
-            <Image
-              src={project.imagePaths[0]}
-              alt="Sequence base"
-              fill
-              sizes="100vw"
-              className="object-cover filter grayscale contrast-115 opacity-55"
-            />
-          </div>
+        isMobile ? (
+          /* Mobile layout: Clean diptych presentation without buggy overlay */
+          <section className="py-12 px-5 max-w-7xl mx-auto space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-canvas-light border border-[#01564C]/25">
+                <Image
+                  src={project.imagePaths[0]}
+                  alt="Sequence base"
+                  fill
+                  sizes="100vw"
+                  className="object-cover filter grayscale contrast-115"
+                />
+                <div className="absolute bottom-4 left-4 font-mono text-[8px] tracking-widest text-foreground/50 bg-canvas/80 px-2 py-0.5 border border-[#01564C]/20">
+                  SEQUENCE // PART 01
+                </div>
+              </div>
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-canvas-light border border-[#01564C]/25">
+                <Image
+                  src={project.imagePaths[1]}
+                  alt="Sequence wipe overlay"
+                  fill
+                  sizes="100vw"
+                  className="object-cover filter contrast-110"
+                />
+                <div className="absolute bottom-4 left-4 font-mono text-[8px] tracking-widest text-foreground/50 bg-canvas/80 px-2 py-0.5 border border-[#01564C]/20">
+                  SEQUENCE // PART 02
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : (
+          /* Desktop layout: GSAP pinned wipe sequence */
+          <section 
+            ref={wipeContainerRef} 
+            className="wipe-container relative h-screen w-full overflow-hidden bg-black flex items-center justify-center"
+          >
+            {/* Base Background Image */}
+            <div className="absolute inset-0 w-full h-full">
+              <Image
+                src={project.imagePaths[0]}
+                alt="Sequence base"
+                fill
+                sizes="100vw"
+                className="object-cover filter grayscale contrast-115 opacity-55"
+              />
+            </div>
 
-          {/* Wipe Overlay Image */}
-          <div ref={wipeImageRef} className="absolute inset-0 w-full h-full z-10">
-            <Image
-              src={project.imagePaths[1]}
-              alt="Sequence wipe overlay"
-              fill
-              sizes="100vw"
-              className="object-cover filter contrast-110"
-            />
-          </div>
+            {/* Wipe Overlay Image */}
+            <div ref={wipeImageRef} className="absolute inset-0 w-full h-full z-10">
+              <Image
+                src={project.imagePaths[1]}
+                alt="Sequence wipe overlay"
+                fill
+                sizes="100vw"
+                className="object-cover filter contrast-110"
+              />
+            </div>
 
-          <div className="absolute bottom-12 left-6 md:left-12 z-20 max-w-md font-mono text-[9px] tracking-widest text-foreground/60 bg-canvas/80 backdrop-blur-md px-4 py-2 border border-[#01564C]/25">
-            [ PINNED SEQUENCE: SLIDE TO INTERTWINE THE NARRATIVES ]
-          </div>
-        </section>
+            <div className="absolute bottom-12 left-6 md:left-12 z-20 max-w-md font-mono text-[9px] tracking-widest text-foreground/60 bg-canvas/80 backdrop-blur-md px-4 py-2 border border-[#01564C]/25">
+              [ PINNED SEQUENCE: SLIDE TO INTERTWINE THE NARRATIVES ]
+            </div>
+          </section>
+        )
       )}
 
       {/* MOMENT 2: Staggered Double Parallax Images */}

@@ -22,6 +22,9 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
   const boardRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
   // Accessibility Check: Reduced motion
   const [prefersReduced, setPrefersReduced] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -32,6 +35,31 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const threshold = 50;
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0) {
+        // swipe left -> next
+        setActiveIdx((prev) => (prev !== null ? (prev + 1) % imagePaths.length : null));
+        playShutterSound();
+      } else {
+        // swipe right -> prev
+        setActiveIdx((prev) => (prev !== null ? (prev - 1 + imagePaths.length) % imagePaths.length : null));
+        playShutterSound();
+      }
+    }
+  };
 
   // Keyboard controls for lightbox navigation
   useEffect(() => {
@@ -207,7 +235,10 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[999999] bg-white/95 backdrop-blur-md flex flex-col justify-between p-6 select-none"
+            className="fixed inset-0 z-[999999] bg-white/95 backdrop-blur-md flex flex-col justify-between p-4 md:p-6 select-none"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             onClick={() => {
               setActiveIdx(null);
               playShutterSound();
@@ -232,7 +263,7 @@ export default function LightTable({ imagePaths, projectTitle }: LightTableProps
             </div>
 
             {/* Main Central Image Frame */}
-            <div className="relative w-full h-[65vh] md:h-[75vh] flex items-center justify-center">
+            <div className="relative w-full flex-grow h-0 flex items-center justify-center my-4 md:my-6">
               {/* Left Arrow Button */}
               <button
                 onClick={handlePrev}

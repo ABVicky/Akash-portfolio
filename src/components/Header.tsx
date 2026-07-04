@@ -13,6 +13,9 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const isDarkHeroPage = pathname === '/' || pathname.startsWith('/project/');
+  const showLightHeader = scrolled || menuOpen || !isDarkHeroPage;
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll);
@@ -51,7 +54,7 @@ export default function Header() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-[99995] transition-all duration-500 ${
-          scrolled || menuOpen
+          showLightHeader
             ? 'bg-[#FFFFFF]/98 backdrop-blur-xl border-b border-[#01564C]/20 shadow-[0_2px_24px_rgba(1,86,76,0.08)]'
             : 'bg-black/55 backdrop-blur-sm border-b border-white/10'
         }`}
@@ -61,12 +64,12 @@ export default function Header() {
           {/* ── Brand ── */}
           <Link href="/" className="group flex flex-col leading-none select-none z-10 relative">
             <span className={`font-serif text-lg md:text-xl font-bold tracking-[0.25em] transition-colors duration-300 ${
-              scrolled || menuOpen ? 'text-[#000000]' : 'text-white'
+              showLightHeader ? 'text-[#000000]' : 'text-white'
             } group-hover:text-[#E9533A]`}>
               AKASH
             </span>
             <span className={`font-mono text-[7px] tracking-[0.35em] uppercase transition-colors duration-300 ${
-              scrolled || menuOpen ? 'text-[#01564C]' : 'text-[#E9533A]'
+              showLightHeader ? 'text-[#01564C]' : 'text-[#E9533A]'
             }`}>
               Est. 2026
             </span>
@@ -81,8 +84,8 @@ export default function Header() {
                   onClick={onClick}
                   className={`relative px-5 py-2 font-mono text-[10px] tracking-[0.25em] font-semibold uppercase transition-colors duration-300 group ${
                     active
-                      ? scrolled ? 'text-[#01564C]' : 'text-white font-bold'
-                      : scrolled ? 'text-[#000000]/70 hover:text-[#01564C]' : 'text-white/90 hover:text-white'
+                      ? showLightHeader ? 'text-[#01564C]' : 'text-white font-bold'
+                      : showLightHeader ? 'text-[#000000]/70 hover:text-[#01564C]' : 'text-white/90 hover:text-white'
                   }`}
                 >
                   {label}
@@ -97,14 +100,14 @@ export default function Header() {
               </Magnetic>
             ))}
 
-            <span className={`w-px h-4 mx-2 ${scrolled ? 'bg-[#01564C]/25' : 'bg-white/20'}`} />
+            <span className={`w-px h-4 mx-2 ${showLightHeader ? 'bg-[#01564C]/25' : 'bg-white/20'}`} />
 
             <Magnetic>
               <button
                 onClick={toggleMute}
                 aria-label={isMuted ? 'Unmute audio' : 'Mute audio'}
                 className={`relative flex items-center gap-2 px-4 py-2 font-mono text-[10px] tracking-[0.25em] font-semibold uppercase transition-colors duration-300 cursor-pointer ${
-                  scrolled ? 'text-[#000000]/70 hover:text-[#E9533A]' : 'text-white/90 hover:text-white'
+                  showLightHeader ? 'text-[#000000]/70 hover:text-[#E9533A]' : 'text-white/90 hover:text-white'
                 }`}
               >
                 <span>{isMuted ? 'Muted' : 'Sound'}</span>
@@ -127,7 +130,7 @@ export default function Header() {
               <a
                 href="mailto:akash@example.com"
                 className={`ml-3 px-5 py-2 font-mono text-[9px] tracking-[0.25em] font-bold uppercase border transition-all duration-300 rounded-full ${
-                  scrolled
+                  showLightHeader
                     ? 'border-[#01564C] text-[#01564C] hover:bg-[#01564C] hover:text-white'
                     : 'border-white text-white hover:bg-white hover:text-[#000000]'
                 }`}
@@ -146,17 +149,17 @@ export default function Header() {
             <motion.span
               animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 7 : 0 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className={`block w-6 h-[1.5px] origin-center ${scrolled || menuOpen ? 'bg-[#000000]' : 'bg-white'}`}
+              className={`block w-6 h-[1.5px] origin-center ${showLightHeader ? 'bg-[#000000]' : 'bg-white'}`}
             />
             <motion.span
               animate={{ opacity: menuOpen ? 0 : 1, scaleX: menuOpen ? 0 : 1 }}
               transition={{ duration: 0.2 }}
-              className={`block w-6 h-[1.5px] ${scrolled || menuOpen ? 'bg-[#000000]' : 'bg-white'}`}
+              className={`block w-6 h-[1.5px] ${showLightHeader ? 'bg-[#000000]' : 'bg-white'}`}
             />
             <motion.span
               animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -7 : 0 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className={`block w-6 h-[1.5px] origin-center ${scrolled || menuOpen ? 'bg-[#000000]' : 'bg-white'}`}
+              className={`block w-6 h-[1.5px] origin-center ${showLightHeader ? 'bg-[#000000]' : 'bg-white'}`}
             />
           </button>
         </div>

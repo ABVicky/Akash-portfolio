@@ -11,8 +11,10 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   useEffect(() => {
     // Check if user prefers reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      console.log('Smooth scroll disabled: reduced motion preferred');
+    // Check if mobile viewport
+    const isMobile = window.innerWidth < 768;
+    if (prefersReducedMotion || isMobile) {
+      console.log('Smooth scroll disabled: reduced motion or mobile viewport');
       return;
     }
 

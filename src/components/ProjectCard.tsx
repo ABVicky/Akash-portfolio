@@ -24,6 +24,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [use3D, setUse3D] = useState(false);
+  const [hasFinePointer, setHasFinePointer] = useState(false);
   const { playShutterSound } = useAudio();
 
   // Motion values for smooth 3D tilt
@@ -38,8 +39,9 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
   useEffect(() => {
     // Disable 3D tilt if user prefers reduced motion or is on touch-only device
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const hasFinePointer = window.matchMedia('(pointer: fine)').matches;
-    setUse3D(!prefersReducedMotion && hasFinePointer);
+    const hasFine = window.matchMedia('(pointer: fine)').matches;
+    setUse3D(!prefersReducedMotion && hasFine);
+    setHasFinePointer(hasFine);
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -156,46 +158,48 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
               style={{ viewTransitionName: `project-image-${project.slug}` }}
             />
 
-            {/* Rangefinder Focusing Split-Patch Emulation (Awwwards-tier custom interactive focus patch) */}
-            <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
-              <motion.div
-                animate={{
-                  borderColor: isHovered ? '#01564C' : '#E9533A',
-                  scale: isHovered ? 1.05 : 1,
-                }}
-                transition={{ type: 'spring', stiffness: 220, damping: 24 }}
-                className="w-[28%] h-[20%] border-[1.5px] border-dashed relative overflow-hidden bg-black/20 backdrop-blur-[0.5px] transition-colors duration-300"
-              >
-                {/* Offset duplicate image inside focus patch */}
+            {/* Rangefinder Focusing Split-Patch Emulation (Awwwards-tier custom interactive focus patch) — Desktop Only */}
+            {hasFinePointer && (
+              <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
                 <motion.div
-                  className="absolute w-full h-full"
                   animate={{
-                    x: isHovered ? 0 : 8,
-                    y: isHovered ? 0 : 4,
+                    borderColor: isHovered ? '#01564C' : '#E9533A',
+                    scale: isHovered ? 1.05 : 1,
                   }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 22 }}
-                  style={{
-                    width: '357%',
-                    height: '500%',
-                    left: '-128.5%',
-                    top: '-200%',
-                  }}
+                  transition={{ type: 'spring', stiffness: 220, damping: 24 }}
+                  className="w-[28%] h-[20%] border-[1.5px] border-dashed relative overflow-hidden bg-black/20 backdrop-blur-[0.5px] transition-colors duration-300"
                 >
-                  <Image
-                    src={project.coverPath}
-                    alt="Rangefinder split align texture"
-                    fill
-                    sizes="15vw"
-                    className="object-cover filter contrast-125 opacity-70"
-                  />
-                </motion.div>
+                  {/* Offset duplicate image inside focus patch */}
+                  <motion.div
+                    className="absolute w-full h-full"
+                    animate={{
+                      x: isHovered ? 0 : 8,
+                      y: isHovered ? 0 : 4,
+                    }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+                    style={{
+                      width: '357%',
+                      height: '500%',
+                      left: '-128.5%',
+                      top: '-200%',
+                    }}
+                  >
+                    <Image
+                      src={project.coverPath}
+                      alt="Rangefinder split align texture"
+                      fill
+                      sizes="15vw"
+                      className="object-cover filter contrast-125 opacity-70"
+                    />
+                  </motion.div>
 
-                {/* Focus HUD indicator on patch margin */}
-                <div className="absolute bottom-1 right-1 font-mono text-[6px] font-bold tracking-widest text-[#E9533A] uppercase scale-90">
-                  {isHovered ? 'LOCK // 0.0mm' : 'ALIGN // +4.5mm'}
-                </div>
-              </motion.div>
-            </div>
+                  {/* Focus HUD indicator on patch margin */}
+                  <div className="absolute bottom-1 right-1 font-mono text-[6px] font-bold tracking-widest text-[#E9533A] uppercase scale-90">
+                    {isHovered ? 'LOCK // 0.0mm' : 'ALIGN // +4.5mm'}
+                  </div>
+                </motion.div>
+              </div>
+            )}
           </div>
 
           {/* Project Details Overlay - Minimalist & Editorial */}

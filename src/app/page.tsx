@@ -69,7 +69,7 @@ export default function Home() {
         <CameraViewfinder />
 
         {/* Spacer to push content below fixed navbar (h-16 on mobile, h-20 on md) */}
-        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-white/70 uppercase pt-4">
+        <div className="relative z-20 flex justify-between items-center text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.25em] font-mono text-white/70 uppercase pt-20 md:pt-24">
           <span>PORTFOLIO COLLECTION</span>
           <span>©2026</span>
         </div>
